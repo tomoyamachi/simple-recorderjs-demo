@@ -5,7 +5,7 @@ var gumStream; 						//stream from getUserMedia()
 var rec; 							//Recorder.js object
 var input; 							//MediaStreamAudioSourceNode we'll be recording
 
-// shim for AudioContext when it's not avb. 
+// shim for AudioContext when it's not avb.
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext //audio context to help us record
 
@@ -25,11 +25,13 @@ function startRecording() {
 		Simple constraints object, for more advanced audio features see
 		https://addpipe.com/blog/audio-constraints-getusermedia/
 	*/
-    
-    var constraints = { audio: true, video:false }
 
+    var constraints = {
+		audio: true,
+		video: true,
+	};
  	/*
-    	Disable the record button until we get a success or fail from getUserMedia() 
+    	Disable the record button until we get a success or fail from getUserMedia()
 	*/
 
 	recordButton.disabled = true;
@@ -37,12 +39,11 @@ function startRecording() {
 	pauseButton.disabled = false
 
 	/*
-    	We're using the standard promise based getUserMedia() 
+    	We're using the standard promise based getUserMedia()
     	https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 	*/
-
-	navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-		console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
+	navigator.mediaDevices.getDisplayMedia(constraints).then(function(stream) {
+		console.log("getDisplayMedia() success, stream created, initializing Recorder.js ...");
 
 		/*
 			create an audio context after getUserMedia is called
@@ -52,16 +53,16 @@ function startRecording() {
 		*/
 		audioContext = new AudioContext();
 
-		//update the format 
+		//update the format
 		document.getElementById("formats").innerHTML="Format: 1 channel pcm @ "+audioContext.sampleRate/1000+"kHz"
 
 		/*  assign to gumStream for later use  */
 		gumStream = stream;
-		
+
 		/* use the stream */
 		input = audioContext.createMediaStreamSource(stream);
 
-		/* 
+		/*
 			Create the Recorder object and configure to record mono sound (1 channel)
 			Recording 2 channels  will double the file size
 		*/
@@ -104,7 +105,7 @@ function stopRecording() {
 
 	//reset button just in case the recording is stopped while paused
 	pauseButton.innerHTML="Pause";
-	
+
 	//tell the recorder to stop the recording
 	rec.stop();
 
@@ -116,7 +117,7 @@ function stopRecording() {
 }
 
 function createDownloadLink(blob) {
-	
+
 	var url = URL.createObjectURL(blob);
 	var au = document.createElement('audio');
 	var li = document.createElement('li');
@@ -136,13 +137,13 @@ function createDownloadLink(blob) {
 
 	//add the new audio element to li
 	li.appendChild(au);
-	
+
 	//add the filename to the li
 	li.appendChild(document.createTextNode(filename+".wav "))
 
 	//add the save to disk link to li
 	li.appendChild(link);
-	
+
 	//upload link
 	var upload = document.createElement('a');
 	upload.href="#";
